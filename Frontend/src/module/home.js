@@ -8,30 +8,105 @@ import {
   FlatList,
   RefreshControl,
   Pressable,
+  StatusBar,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import FlotingButton from "../components/flotingButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPosts } from "../redux/slices/postslice";
+import {
+  fetchPosts,
+  getPostLikesThunk,
+  likePostThunk,
+  getCommentsThunk,
+  addCommentThunk,
+} from "../redux/slices/postslice";
+
+import { getStoriesThunk } from "../redux/slices/storyslice";
 import navigationServices from "../navigator/navigationServices";
+import StoryList from "../components/StoryList";
+import PostItem from "../components/PostsItems";
+import CommentsModal from "../components/CommentModal";
+import { useTheme } from "../theme/ThemeContext";
+import ProfileCard from "../components/ProfileCard";
+import {
+  followUserThunk,
+  getAllUsersThunk,
+  unfollowUserThunk,
+} from "../redux/slices/userslice";
+
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Home() {
+  const { theme, isDark } = useTheme();
   const dispatch = useDispatch();
+  const [commentVisible, setCommentVisible] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const { posts, loading, error } = useSelector((state) => state.post);
+  const { stories, loading: storyLoading } = useSelector(
+    (state) => state.story,
+  );
+  const { users, loading: usersLoading } = useSelector((state) => state.user);
+  const { profile } = useSelector((state) => state.profile);
 
   useEffect(() => {
     dispatch(fetchPosts());
+    dispatch(getStoriesThunk());
+    dispatch(getAllUsersThunk());
   }, []);
 
   const onRefresh = () => {
     dispatch(fetchPosts());
+    dispatch(getStoriesThunk());
   };
+
+  useEffect(() => {
+    if (posts.length > 0) {
+      posts.forEach((post) => {
+        dispatch(getPostLikesThunk(post._id));
+        dispatch(getCommentsThunk(post._id));
+      });
+    }
+  }, [posts]);
+
+  const formattedStories = stories.map((item) => ({
+    id: item.user._id,
+    user: item.user, // 👈 pura user object
+    name: item.user._id === profile?._id ? "Your Story" : item.user.name,
+    isMyStory: item.user._id === profile?._id,
+    thumbnail: item.stories[0]?.media,
+    type: item.stories[0]?.type,
+    storyId: item.stories[0]?._id,
+    viewed: item.stories[0]?.isViewed,
+    stories: item.stories,
+  }));
+
+  const sortedStories = [
+    ...formattedStories.filter((item) => item.isMyStory),
+    ...formattedStories.filter((item) => !item.isMyStory),
+  ];
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
+      edges={["top"]}>
+      <StatusBar
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.colors.background,
+          },
+        ]}>
+        {/* <ProfileCard
+          name="Avneesh Sharma"
+          buttonTitle="Follow"
+          onPress={() => console.log("Follow")}
+        /> */}
         <FlatList
           data={posts}
           keyExtractor={(item) => item._id}
@@ -40,48 +115,80 @@ export default function Home() {
             <RefreshControl
               refreshing={loading}
               onRefresh={onRefresh}
-              colors={["black"]} // Android
-              tintColor="red" // iOS
+              colors={["black"]}
+              tintColor="red"
             />
           }
-          renderItem={({ item }) => (
-            <View
-              style={{
-                backgroundColor: "#dddada",
-                marginVertical: 10,
-                borderRadius: 10,
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                source={{ uri: item.image }}
-                style={{
-                  width: "100%",
-                  aspectRatio: 1,
+          ListHeaderComponent={
+            <>
+              <Pressable
+                onPress={() => navigationServices.navigate("ChatPersons")}
+                style={{ alignSelf: "flex-end", marginTop: 5, marginRight: 5 }}>
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={28}
+                  color={theme.colors.icon}
+                />
+              </Pressable>
+              <StoryList
+                stories={sortedStories}
+                onStoryPress={(story) => {
+                  navigationServices.navigate("StoryViewer", { story });
                 }}
-                resizeMode="cover"
               />
 
-              <View
-                style={{
-                  padding: 12,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+              <FlatList
+                data={users}
+                horizontal
+                keyExtractor={(item) => item._id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 10,
+                  gap: 10,
                 }}
-              >
-                <Text style={styles.caption}>{item.caption}</Text>
-                <Pressable>
-                  <Text
-                    style={{ alignItems: "center", justifyContent: "center" }}
-                  >
-                    :
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
+                renderItem={({ item }) => (
+                  <ProfileCard
+                    name={item.name}
+                    buttonTitle={item.isFollowed ? "Unfollow" : "Follow"}
+                    onPress={async () => {
+                      if (item.isFollowed) {
+                        await dispatch(unfollowUserThunk(item._id));
+                      } else {
+                        await dispatch(followUserThunk(item._id));
+                      }
+
+                      dispatch(getAllUsersThunk());
+                    }}
+                  />
+                )}
+              />
+            </>
+          }
+          renderItem={({ item }) => (
+            <PostItem
+              item={item}
+              onLike={async (post) => {
+                await dispatch(likePostThunk(post._id));
+                dispatch(getPostLikesThunk(post._id));
+              }}
+              onComment={(post) => {
+                setSelectedPost(post);
+                setCommentVisible(true);
+                dispatch(getCommentsThunk(post._id));
+              }}
+            />
           )}
         />
-        <FlotingButton onPress={() => navigationServices.navigate("Post")} />
+        <FlotingButton
+          onPress={() => navigationServices.navigate("AddStory")}
+        />
+        <CommentsModal
+          visible={commentVisible}
+          onClose={() => setCommentVisible(false)}
+          postId={selectedPost?._id}
+          comments={[]}
+        />
       </View>
     </SafeAreaView>
   );
@@ -90,13 +197,27 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
   },
   image: {
     height: 200,
   },
   caption: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "500",
+  },
+  story: {
+    height: 100,
+    width: 100,
+    borderWidth: 1,
+    borderRadius: 50,
+  },
+  actions: {
+    fontSize: 18,
+  },
+  profile: {
+    height: 180,
+    width: 120,
+    borderRadius: 5,
   },
 });

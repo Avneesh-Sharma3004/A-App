@@ -1,6 +1,7 @@
 import {
   Image,
   Pressable,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -11,10 +12,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { createPostThunk, fetchPosts } from "../redux/slices/postslice";
-import navigationServices from "../navigator/navigationServices";
+import { createPostThunk, fetchPosts } from "../../redux/slices/postslice";
+import navigationServices from "../../navigator/navigationServices";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function Post() {
+  const { theme, isDark } = useTheme();
   const [image, setImage] = useState(null);
   const [caption, setCaption] = useState("");
   const dispatch = useDispatch();
@@ -83,9 +86,26 @@ export default function Post() {
     }
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ paddingHorizontal: 15, flex: 1 }}>
-        <Pressable style={styles.imagecontainer} onPress={pickimage}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: theme.colors.background,
+      }}>
+      <StatusBar
+        backgroundColor={theme.colors.background}
+        barStyle={isDark ? "light-content" : "dark-content"}
+      />
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background },
+        ]}>
+        <Pressable
+          style={[
+            styles.imagecontainer,
+            { borderColor: theme.colors.inputBorder },
+          ]}
+          onPress={pickimage}>
           {image ? (
             <Image
               source={{ uri: image }}
@@ -98,14 +118,15 @@ export default function Post() {
           ) : (
             <View style={{ alignItems: "center" }}>
               <Image
-                source={require("../../assets/image-upload.png")}
+                source={require("../../../assets/image-upload.png")}
                 style={{
                   width: 80,
                   height: 80,
                   marginBottom: 10,
+                  tintColor: theme.colors.icon,
                 }}
               />
-              <Text>Upload Image</Text>
+              <Text style={{ color: theme.colors.text }}>Upload Image</Text>
             </View>
           )}
         </Pressable>
@@ -115,21 +136,23 @@ export default function Post() {
           numberOfLines={5}
           value={caption}
           onChangeText={setCaption}
-          style={styles.input}
+          placeholderTextColor={theme.colors.text}
+          style={[
+            styles.input,
+            { borderColor: theme.colors.inputBorder, color: theme.colors.text },
+          ]}
         />
         <Pressable
-          style={styles.button}
+          style={[styles.button]}
           onPress={submitPost}
-          disabled={createLoading}
-        >
+          disabled={createLoading}>
           <Text
             style={{
               alignSelf: "center",
               fontSize: 16,
               fontWeight: "400",
               color: "#fff",
-            }}
-          >
+            }}>
             {createLoading ? "Uploading..." : "Post"}
           </Text>
         </Pressable>
@@ -139,6 +162,10 @@ export default function Post() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 15,
+    flex: 1,
+  },
   imagecontainer: {
     borderWidth: 1,
     height: 250,

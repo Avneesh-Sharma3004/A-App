@@ -1,13 +1,33 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const postSchema  = new mongoose.Schema({
+const postSchema = new mongoose.Schema(
+  {
+    image: {
+      type: String,
+      required: true,
+    },
 
-    image:String,
-    caption:String,
-    
+    caption: {
+      type: String,
+      trim: true,
+    },
 
-})
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
 
-const postModel = mongoose.model("instaPost",postSchema)
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
 
-module.exports = postModel
+module.exports = mongoose.model("instaPost", postSchema);

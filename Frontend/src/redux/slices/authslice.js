@@ -15,10 +15,13 @@ export const registerThunk = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await registerUser(userData);
+      console.log(response);
+      await AsyncStorage.setItem("token", response.token);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Registration Failed",
+        console.log(error),
       );
     }
   },
@@ -52,6 +55,9 @@ const authSlice = createSlice({
   initialState,
 
   reducers: {
+    setToken(state, action) {
+      state.token = action.payload;
+    },
     logout(state) {
       state.user = null;
       state.token = null;
@@ -98,6 +104,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setToken } = authSlice.actions;
 
 export default authSlice.reducer;
