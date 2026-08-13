@@ -5,8 +5,10 @@ import { Ionicons } from "@expo/vector-icons";
 import navigationServices from "../../navigator/navigationServices";
 import * as ImagePicker from "expo-image-picker";
 import { Alert } from "react-native";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function AddStory() {
+  const { theme } = useTheme();
   // Open Galory And permission function
 
   const openGallery = async () => {
@@ -39,42 +41,60 @@ export default function AddStory() {
   ///////////////////////////////////
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => navigationServices.goBack()}>
-          <Ionicons name="close" size={30} color="#fff" />
+          <Ionicons name="close" size={30} color={theme.colors.icon} />
         </Pressable>
 
-        <Text style={styles.headerTitle}>New Story</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+          New Story
+        </Text>
 
         <View style={{ width: 30 }} />
       </View>
 
       {/* Body */}
       <View style={styles.body}>
-        <Pressable style={styles.card} onPress={openGallery}>
-          <Ionicons name="images" size={55} color="#000" />
+        <Pressable
+          style={[styles.card, { backgroundColor: theme.colors.card }]}
+          onPress={openGallery}>
+          <Ionicons name="images" size={55} color={theme.colors.icon} />
 
-          <Text style={styles.title}>Gallery</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>
+            Gallery
+          </Text>
 
-          <Text style={styles.subtitle}>Choose image or video</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text }]}>
+            Choose image or video
+          </Text>
         </Pressable>
 
-        <Pressable style={styles.card}>
-          <Ionicons name="camera" size={55} color="#000" />
+        <Pressable
+          style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Ionicons name="camera" size={55} color={theme.colors.icon} />
 
-          <Text style={styles.title}>Camera</Text>
+          <Text style={[styles.title, { color: theme.colors.text }]}>
+            Camera
+          </Text>
 
-          <Text style={styles.subtitle}>Capture instantly</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.text }]}>
+            Capture instantly
+          </Text>
         </Pressable>
       </View>
 
       {/* Bottom */}
       <View style={styles.bottomBar}>
-        <Text style={styles.bottomText}>Images & Videos</Text>
+        <Text style={[styles.bottomText, { color: theme.colors.text }]}>
+          Images & Videos
+        </Text>
 
-        <Text style={styles.bottomText}>Max 15 Seconds</Text>
+        <Text style={[styles.bottomText, { color: theme.colors.text }]}>
+          Max 15 Seconds
+        </Text>
       </View>
     </SafeAreaView>
   );

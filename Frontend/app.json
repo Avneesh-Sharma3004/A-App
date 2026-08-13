@@ -1,23 +1,16 @@
 {
   "expo": {
-    "name": "Frontend",
+    "name": "A-App",
     "slug": "Frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/appIcon/A-App-Icon-1024x1024.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
-            "softwareKeyboardLayoutMode": "resize",
-
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
+      "softwareKeyboardLayoutMode": "resize",
       "package": "com.anonymous.Frontend"
     },
     "web": {
@@ -27,6 +20,11 @@
       "expo-status-bar",
       "expo-video",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d7d8212f-4417-4979-99c6-a384a93e1f28"
+      }
+    }
   }
 }

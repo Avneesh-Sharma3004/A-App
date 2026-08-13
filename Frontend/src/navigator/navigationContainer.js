@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setToken } from "../redux/slices/authslice";
 import { getProfileThunk } from "../redux/slices/profileSlice";
+import SplashScreen from "../components/SplashScreen";
 
 export default function AppNavigationContainer() {
   const dispatch = useDispatch();
@@ -23,6 +24,8 @@ export default function AppNavigationContainer() {
           dispatch(setToken(token));
           dispatch(getProfileThunk());
         }
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } catch (error) {
         console.log(error);
       } finally {
@@ -34,7 +37,7 @@ export default function AppNavigationContainer() {
   }, []);
 
   if (loading) {
-    return null; // ya Splash Screen dikhao
+    return <SplashScreen />; // ya Splash Screen dikhao
   }
   return (
     <NavigationContainer

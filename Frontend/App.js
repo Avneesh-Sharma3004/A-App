@@ -1,30 +1,35 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import Home from "./src/module/home";
-import { Provider } from "react-redux";
+import { StyleSheet } from "react-native";
+import { Provider, useSelector } from "react-redux";
 import { store } from "./src/redux/store";
-import RootNavigator from "./src/navigator/rootNavigator";
 import AppNavigationContainer from "./src/navigator";
 import { ThemeProvider } from "./src/theme/ThemeContext";
+import { useEffect } from "react";
+import { connectSocket } from "./src/services/SocketServices";
 
 export default function App() {
   return (
     <Provider store={store}>
-      <ThemeProvider>
-        <AppNavigationContainer />
-      </ThemeProvider>
+      <AppContent />
     </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-});
+function AppContent() {
+  const { profile } = useSelector((state) => state.profile);
 
-///asihawdhas sahdo sduas d//
+  const currentUserId = profile?._id;
 
-// sadhasidsua dsaud asuhd sadhisa ou dh dasi odsad hsad osadhoasd as odashod asdsad
-// sadjsa dsad asodasdsa
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    connectSocket(currentUserId);
+  }, [currentUserId]);
+
+  return (
+    <ThemeProvider>
+      <AppNavigationContainer />
+    </ThemeProvider>
+  );
+}
+
+const styles = StyleSheet.create({});

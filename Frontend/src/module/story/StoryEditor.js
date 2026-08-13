@@ -15,8 +15,10 @@ import { useRoute } from "@react-navigation/native";
 import navigationServices from "../../navigator/navigationServices";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { useState } from "react";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function StoryEditor() {
+  const { theme } = useTheme();
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [storyText, setStoryText] = useState("");
   const route = useRoute();
@@ -29,7 +31,8 @@ export default function StoryEditor() {
   });
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Media */}
 
       {media.type === "image" ? (
@@ -51,14 +54,14 @@ export default function StoryEditor() {
 
       <View style={styles.header}>
         <Pressable onPress={() => navigationServices.goBack()}>
-          <Ionicons name="close" size={30} color="#000" />
+          <Ionicons name="close" size={30} color={theme.colors.icon} />
         </Pressable>
 
         <Pressable
           onPress={() => {
             navigationServices.navigate("StoryPreview", { media });
           }}>
-          <Ionicons name="arrow-forward" size={28} color="#000" />
+          <Ionicons name="arrow-forward" size={28} color={theme.colors.icon} />
         </Pressable>
       </View>
 
@@ -66,15 +69,19 @@ export default function StoryEditor() {
 
       <View style={styles.toolbar}>
         <Pressable onPress={() => setShowTextEditor(true)}>
-          <Ionicons name="text" size={28} color="#000" />
+          <Ionicons name="text" size={28} color={theme.colors.icon} />
         </Pressable>
-        <Ionicons name="happy-outline" size={26} color="#000" />
+        <Ionicons name="happy-outline" size={26} color={theme.colors.icon} />
 
-        <Ionicons name="brush-outline" size={26} color="#000" />
+        <Ionicons name="brush-outline" size={26} color={theme.colors.icon} />
 
-        <Ionicons name="crop-outline" size={26} color="#000" />
+        <Ionicons name="crop-outline" size={26} color={theme.colors.icon} />
 
-        <Ionicons name="ellipsis-horizontal" size={26} color="#000" />
+        <Ionicons
+          name="ellipsis-horizontal"
+          size={26}
+          color={theme.colors.icon}
+        />
       </View>
 
       <Modal visible={showTextEditor} animationType="fade">
@@ -94,7 +101,7 @@ export default function StoryEditor() {
               paddingTop: 60,
             }}>
             <Pressable onPress={() => setShowTextEditor(false)}>
-              <Ionicons name="close" size={30} color="#fff" />
+              <Ionicons name="close" size={30} color={theme.colors.icon} />
             </Pressable>
 
             <Pressable

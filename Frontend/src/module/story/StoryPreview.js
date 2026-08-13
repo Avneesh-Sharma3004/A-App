@@ -10,8 +10,10 @@ import {
   createStoryThunk,
   getStoriesThunk,
 } from "../../redux/slices/storyslice";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function StoryPreview() {
+  const { theme } = useTheme();
   const dispatch = useDispatch();
 
   const { uploading } = useSelector((state) => state.story);
@@ -66,7 +68,7 @@ export default function StoryPreview() {
 
       <View style={styles.header}>
         <Pressable onPress={() => navigationServices.goBack()}>
-          <Ionicons name="arrow-back" size={28} color="#fff" />
+          <Ionicons name="arrow-back" size={28} color={theme.colors.icon} />
         </Pressable>
 
         <Text style={styles.title}>Your Story</Text>
@@ -76,14 +78,22 @@ export default function StoryPreview() {
 
       {/* Bottom Card */}
 
-      <View style={styles.bottomCard}>
+      <View
+        style={[
+          styles.bottomCard,
+          { backgroundColor: theme.colors.background },
+        ]}>
         <View style={styles.row}>
-          <Ionicons name="globe-outline" size={22} color="#000" />
+          <Ionicons name="globe-outline" size={22} color={theme.colors.icon} />
 
           <View style={{ marginLeft: 12 }}>
-            <Text style={styles.heading}>Your Story</Text>
+            <Text style={[styles.heading, { color: theme.colors.text }]}>
+              Your Story
+            </Text>
 
-            <Text style={styles.subHeading}>Anyone can view your story</Text>
+            <Text style={[styles.subHeading, { color: theme.colors.text }]}>
+              Anyone can view your story
+            </Text>
           </View>
         </View>
 

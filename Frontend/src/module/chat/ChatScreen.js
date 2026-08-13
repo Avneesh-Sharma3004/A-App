@@ -120,12 +120,10 @@ import {
   markMessagesRead,
   markMessagesAsReadThunk,
 } from "../../redux/slices/messageslice";
-
-import { socket, connectSocket } from "../../services/SocketServices";
+import { checkUserOnline, socket } from "../../services/SocketServices";
 
 export default function ChatScreen({ route }) {
   const [isTyping, setIsTyping] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
   const { item } = route.params;
 
   const { theme } = useTheme();
@@ -137,17 +135,30 @@ export default function ChatScreen({ route }) {
   );
 
   const { profile } = useSelector((state) => state.profile);
+  const { onlineUsers } = useSelector((state) => state.presence);
+
+  const receiverId = item._id;
+  const currentUserId = profile?._id;
+
+  const isOnline = onlineUsers.includes(receiverId);
+  console.log("ONLINE USERS =>", onlineUsers);
+  console.log("TARGET USER =>", receiverId);
+  console.log("IS ONLINE =>", isOnline);
 
   const [message, setMessage] = useState("");
 
   const flatListRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
+  useEffect(() => {
+    if (!receiverId) return;
+
+    checkUserOnline(receiverId);
+  }, [receiverId]);
+
   // Receiver ID
-  const receiverId = item._id;
 
   // Current logged-in user ID
-  const currentUserId = profile?._id;
 
   // =========================
   // LOAD MESSAGES
@@ -172,17 +183,6 @@ export default function ChatScreen({ route }) {
   // =========================
   // SOCKET CONNECT
   // =========================
-
-  useEffect(() => {
-    if (!currentUserId) return;
-
-    connectSocket(currentUserId);
-
-    return () => {
-      // Abhi socket disconnect mat karna
-      // kyunki app ke dusre screens ko bhi socket chahiye
-    };
-  }, [currentUserId]);
 
   // =========================
   // RECEIVE NEW MESSAGE
@@ -345,30 +345,6 @@ export default function ChatScreen({ route }) {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (!currentUserId || !item?._id) return;
-
-    const handleUserOnline = ({ userId }) => {
-      if (userId === item._id) {
-        setIsOnline(true);
-      }
-    };
-
-    const handleUserOffline = ({ userId }) => {
-      if (userId === item._id) {
-        setIsOnline(false);
-      }
-    };
-
-    socket.on("userOnline", handleUserOnline);
-    socket.on("userOffline", handleUserOffline);
-
-    return () => {
-      socket.off("userOnline", handleUserOnline);
-      socket.off("userOffline", handleUserOffline);
-    };
-  }, [currentUserId, item?._id]);
 
   return (
     <SafeAreaView

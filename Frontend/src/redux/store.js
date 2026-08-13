@@ -5,6 +5,7 @@ import profileReducer from "./slices/profileSlice";
 import storyReducer from "./slices/storyslice";
 import userReducer from "./slices/userslice";
 import messageReducer from "./slices/messageslice";
+import presenceReducer from "./slices/presenceSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     story: storyReducer,
     user: userReducer,
     message: messageReducer,
+    presence: presenceReducer,
   },
 });

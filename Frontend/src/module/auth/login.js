@@ -1,6 +1,7 @@
 import {
   KeyboardAvoidingView,
   Pressable,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
@@ -12,8 +13,10 @@ import { useDispatch } from "react-redux";
 import { loginThunk } from "../../redux/slices/authslice";
 import navigationServices from "../../navigator/navigationServices";
 import { getProfileThunk } from "../../redux/slices/profileSlice";
+import { useTheme } from "../../theme/ThemeContext";
 
 export default function Login() {
+  const { theme, isDark } = useTheme();
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
@@ -34,31 +37,47 @@ export default function Login() {
     }
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <StatusBar
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={theme.colors.background}
+      />
       <KeyboardAvoidingView style={{ flex: 1 }}>
         <View
           style={{
             flex: 1,
             justifyContent: "center",
-            backgroundColor: "#fff",
+            backgroundColor: theme.colors.background,
           }}>
           <View style={{ marginBottom: 10, alignSelf: "center" }}>
-            <Text style={{ fontSize: 18, fontWeight: "500" }}>A-App</Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "500",
+                color: theme.colors.text,
+              }}>
+              A-App
+            </Text>
           </View>
           <View
             style={{
-              backgroundColor: "#f2eded",
+              backgroundColor: theme.colors.card,
               justifyContent: "center",
               alignItems: "center",
               paddingVertical: 20,
               gap: 20,
               marginHorizontal: 10,
-              borderRadius: 5,
+              borderRadius: 10,
               elevation: 5,
               shadowColor: "#000",
             }}>
             <View style={{ marginBottom: 10 }}>
-              <Text style={{ fontSize: 20, fontWeight: "500" }}>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "500",
+                  color: theme.colors.text,
+                }}>
                 Welcome Back
               </Text>
             </View>
@@ -67,12 +86,15 @@ export default function Login() {
                 placeholder="Email"
                 value={email}
                 onChangeText={setemail}
+                placeholderTextColor={theme.colors.text}
                 style={{
                   borderWidth: 1,
                   paddingVertical: 15,
                   paddingHorizontal: 10,
                   marginBottom: 10,
                   borderRadius: 5,
+                  borderColor: theme.colors.inputBorder,
+                  color: theme.colors.text,
                 }}
               />
 
@@ -81,12 +103,15 @@ export default function Login() {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                placeholderTextColor={theme.colors.text}
                 style={{
                   borderWidth: 1,
                   paddingVertical: 15,
                   paddingHorizontal: 10,
                   marginBottom: 10,
                   borderRadius: 5,
+                  borderColor: theme.colors.inputBorder,
+                  color: theme.colors.text,
                 }}
               />
 
@@ -102,10 +127,12 @@ export default function Login() {
               </Pressable>
             </View>
             <View style={{ flexDirection: "row", gap: 5 }}>
-              <Text>Don't have an account</Text>
+              <Text style={{ color: theme.colors.text }}>
+                Don't have an account
+              </Text>
               <Pressable
                 onPress={() => navigationServices.navigate("Register")}>
-                <Text style={{ color: "#063640" }}>Create Account</Text>
+                <Text style={{ color: "#16caee" }}>Create Account</Text>
               </Pressable>
             </View>
           </View>
