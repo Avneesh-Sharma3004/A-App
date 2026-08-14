@@ -11,7 +11,8 @@
     },
     "android": {
       "softwareKeyboardLayoutMode": "resize",
-      "package": "com.anonymous.Frontend"
+      "package": "com.anonymous.Frontend",
+      "googleServicesFile":"./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -19,7 +20,9 @@
     "plugins": [
       "expo-status-bar",
       "expo-video",
-      "expo-font"
+      "expo-font",
+      "expo-notifications"
+
     ],
     "extra": {
       "eas": {

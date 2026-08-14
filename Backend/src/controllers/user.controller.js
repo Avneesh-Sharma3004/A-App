@@ -190,10 +190,54 @@ const getFollowing = async (req, res) => {
   }
 };
 
+const savePushToken = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { pushToken } = req.body;
+
+    if (!pushToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Push token is required",
+      });
+    }
+
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      {
+        pushToken,
+      },
+      {
+        new: true,
+      },
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Push token saved successfully",
+    });
+  } catch (error) {
+    console.log("Save Push Token Error =>", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   followUser,
   unfollowUser,
   getFollowers,
   getAllUsers,
   getFollowing,
+  savePushToken,
 };

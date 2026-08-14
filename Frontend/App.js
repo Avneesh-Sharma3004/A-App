@@ -5,6 +5,8 @@ import AppNavigationContainer from "./src/navigator";
 import { ThemeProvider } from "./src/theme/ThemeContext";
 import { useEffect } from "react";
 import { connectSocket } from "./src/services/SocketServices";
+import { registerForPushNotificationsAsync } from "./src/services/NotificationServices";
+import { savePushToken } from "./src/services/UserServices";
 
 export default function App() {
   return (
@@ -25,6 +27,33 @@ function AppContent() {
     connectSocket(currentUserId);
   }, [currentUserId]);
 
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const setupPushNotification = async () => {
+      try {
+        const pushToken = await registerForPushNotificationsAsync();
+
+        if (!pushToken) {
+          console.log("❌ Push token nahi mila");
+          return;
+        }
+
+        console.log("🚀 PUSH TOKEN =>", pushToken);
+
+        const response = await savePushToken(pushToken);
+
+        console.log("✅ Push Token Saved =>", response);
+      } catch (error) {
+        console.log(
+          "❌ Push Token Save Error =>",
+          error?.response?.data || error.message,
+        );
+      }
+    };
+
+    setupPushNotification();
+  }, [currentUserId]);
   return (
     <ThemeProvider>
       <AppNavigationContainer />
