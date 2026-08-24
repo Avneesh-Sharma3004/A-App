@@ -9,6 +9,7 @@ import {
 } from "../redux/slices/presenceSlice";
 
 const SOCKET_URL = "https://a-app-17oj.onrender.com";
+// const SOCKET_URL = "http://192.168.1.15:1800";
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false,

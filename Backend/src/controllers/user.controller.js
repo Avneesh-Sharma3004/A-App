@@ -1,4 +1,5 @@
 const userModel = require("../models/user.model");
+const { sendPushNotification } = require("../services/notificationService");
 
 const followUser = async (req, res) => {
   try {
@@ -35,6 +36,26 @@ const followUser = async (req, res) => {
 
     await targetUser.save();
     await currentUser.save();
+
+    if (targetUser.pushToken) {
+      sendPushNotification({
+        pushToken: targetUser.pushToken,
+
+        title: "New Follower",
+
+        body: `${currentUser.name} just followed you`,
+
+        data: {
+          type: "follow",
+          userId: currentUser._id.toString(),
+        },
+      }).catch((error) => {
+        console.log(
+          "❌ Follow Notification Error =>",
+          error.response?.data || error.message,
+        );
+      });
+    }
 
     return res.status(200).json({
       message: "User followed successfully",
