@@ -5,8 +5,13 @@ import AppNavigationContainer from "./src/navigator";
 import { ThemeProvider } from "./src/theme/ThemeContext";
 import { useEffect } from "react";
 import { connectSocket } from "./src/services/SocketServices";
-import { registerForPushNotificationsAsync } from "./src/services/NotificationServices";
+import {
+  registerForPushNotificationsAsync,
+  setupNotificationListeners,
+} from "./src/services/NotificationServices";
 import { savePushToken } from "./src/services/UserServices";
+import api from "./src/services/api";
+import navigationServices from "./src/navigator/navigationServices";
 
 export default function App() {
   return (
@@ -35,24 +40,57 @@ function AppContent() {
         const pushToken = await registerForPushNotificationsAsync();
 
         if (!pushToken) {
-          console.log("❌ Push token nahi mila");
+          // console.log("❌ Push token nahi mila");
           return;
         }
 
-        console.log("🚀 PUSH TOKEN =>", pushToken);
+        // console.log("🚀 PUSH TOKEN =>", pushToken);
 
         const response = await savePushToken(pushToken);
 
-        console.log("✅ Push Token Saved =>", response);
+        // console.log("✅ Push Token Saved =>", response);
       } catch (error) {
-        console.log(
-          "❌ Push Token Save Error =>",
-          error?.response?.data || error.message,
-        );
+        // console.log(
+        //   "❌ Push Token Save Error =>",
+        //   error?.response?.data || error.message,
+        // );
       }
     };
 
+    const removeNotificationListener = setupNotificationListeners({
+      onNotificationTap: async (data) => {
+        // console.log("📲 Notification Data =>", data);
+
+        if (data?.type === "message") {
+          try {
+            const response = await api.get(`api/users/profile`);
+
+            const user = response.data?.user;
+
+            if (!user) {
+              // console.log("❌ Notification user nahi mila");
+              return;
+            }
+
+            navigationServices.navigate("ChatScreen", {
+              item: user,
+            });
+          } catch (error) {
+            // console.log(
+            //   "❌ Notification Navigation Error =>",
+            //   error?.response?.data || error.message,
+            // );
+          }
+        }
+      },
+    });
+
     setupPushNotification();
+
+    // 🔥 Cleanup
+    return () => {
+      removeNotificationListener?.();
+    };
   }, [currentUserId]);
   return (
     <ThemeProvider>

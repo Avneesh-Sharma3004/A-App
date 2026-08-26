@@ -1,4 +1,6 @@
 import {
+  ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Pressable,
   StatusBar,
@@ -19,9 +21,12 @@ export default function Login() {
   const { theme, isDark } = useTheme();
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const handleLogin = async () => {
     try {
+      setLoading(true);
+
       await dispatch(
         loginThunk({
           email,
@@ -29,11 +34,15 @@ export default function Login() {
         }),
       ).unwrap();
 
-      await dispatch(getProfileThunk());
+      await dispatch(getProfileThunk()).unwrap();
 
       console.log("Login Success");
     } catch (error) {
       console.log("Login Failed", error);
+
+      Alert.alert("Login Failed", "Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -117,13 +126,18 @@ export default function Login() {
 
               <Pressable
                 onPress={handleLogin}
+                disabled={loading}
                 style={{
-                  backgroundColor: "red",
+                  backgroundColor: loading ? "red" : "red",
                   paddingVertical: 15,
                   alignItems: "center",
                   borderRadius: 5,
                 }}>
-                <Text style={{ color: "#fff" }}>Login</Text>
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={{ color: "#fff" }}>Login</Text>
+                )}
               </Pressable>
             </View>
             <View style={{ flexDirection: "row", gap: 5 }}>

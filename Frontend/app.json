@@ -12,7 +12,11 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.anonymous.Frontend",
-      "googleServicesFile":"./google-services.json"
+      "googleServicesFile":"./google-services.json",
+      "notification": {
+    "icon": "./assets/appIcon/A-App-Icon-1024x1024.png",
+    "color": "#000"
+  }
     },
     "web": {
       "favicon": "./assets/favicon.png"

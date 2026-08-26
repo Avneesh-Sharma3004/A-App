@@ -77,3 +77,21 @@ export const registerForPushNotificationsAsync = async () => {
 
   return token;
 };
+
+export const setupNotificationListeners = ({ onNotificationTap }) => {
+  const subscription = Notifications.addNotificationResponseReceivedListener(
+    (response) => {
+      const data = response.notification.request.content.data;
+
+      console.log("🔔 Notification Tapped =>", data);
+
+      if (onNotificationTap) {
+        onNotificationTap(data);
+      }
+    },
+  );
+
+  return () => {
+    subscription.remove();
+  };
+};

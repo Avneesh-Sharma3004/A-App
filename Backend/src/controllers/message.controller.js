@@ -2,6 +2,7 @@ const Conversation = require("../models/conversation.model");
 const Message = require("../models/message.model");
 const userModel = require("../models/user.model");
 const { getIO } = require("../socket");
+const { sendPushNotification } = require("../services/notificationService");
 
 const sendMessage = async (req, res) => {
   try {
@@ -73,6 +74,50 @@ const sendMessage = async (req, res) => {
     const io = getIO();
 
     io.to(receiverId).emit("newMessage", newMessage);
+
+    // 🔔 Push Notification
+    if (receiver.pushToken) {
+      sendPushNotification({
+        pushToken: receiver.pushToken,
+
+        title: newMessage.sender.name,
+
+        body: newMessage.message,
+
+        data: {
+          type: "message",
+          userId: senderId.toString(),
+          conversationId: conversation._id.toString(),
+          messageId: newMessage._id.toString(),
+        },
+      }).catch((error) => {
+        console.log(
+          "❌ Message Notification Error =>",
+          error.response?.data || error.message,
+        );
+      });
+    }
+    if (receiver.pushToken) {
+      sendPushNotification({
+        pushToken: receiver.pushToken,
+
+        title: newMessage.sender.name,
+
+        body: newMessage.message,
+
+        data: {
+          type: "message",
+          userId: senderId.toString(),
+          conversationId: conversation._id.toString(),
+          messageId: newMessage._id.toString(),
+        },
+      }).catch((error) => {
+        console.log(
+          "❌ Message Notification Error =>",
+          error.response?.data || error.message,
+        );
+      });
+    }
 
     return res.status(201).json({
       success: true,

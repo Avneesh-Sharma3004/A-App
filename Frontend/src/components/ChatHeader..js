@@ -119,7 +119,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { useTheme } from "../theme/ThemeContext";
 
 export default function ChatHeader({ item, isTyping, onBack, isOnline }) {
-  console.log(isOnline);
+  // console.log(isOnline);
   const { theme } = useTheme();
 
   return (
