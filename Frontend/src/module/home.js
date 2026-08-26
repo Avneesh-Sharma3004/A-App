@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Pressable,
   StatusBar,
+  TextInput,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import FlotingButton from "../components/flotingButton";
@@ -43,6 +44,7 @@ export default function Home() {
   const dispatch = useDispatch();
   const [commentVisible, setCommentVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [visibleUsers, setVisibleUsers] = useState(5);
 
   const { posts, loading, error } = useSelector((state) => state.post);
   const { stories, loading: storyLoading } = useSelector(
@@ -87,6 +89,12 @@ export default function Home() {
     ...formattedStories.filter((item) => item.isMyStory),
     ...formattedStories.filter((item) => !item.isMyStory),
   ];
+
+  const unfollowedUsers = users.filter(
+    (item) => !item.isFollowed && item._id !== profile?._id,
+  );
+
+  const visibleUserList = unfollowedUsers.slice(0, visibleUsers);
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: theme.colors.background }}
@@ -102,11 +110,6 @@ export default function Home() {
             backgroundColor: theme.colors.background,
           },
         ]}>
-        {/* <ProfileCard
-          name="Avneesh Sharma"
-          buttonTitle="Follow"
-          onPress={() => console.log("Follow")}
-        /> */}
         <FlatList
           data={posts}
           keyExtractor={(item) => item._id}
@@ -121,15 +124,30 @@ export default function Home() {
           }
           ListHeaderComponent={
             <>
-              <Pressable
-                onPress={() => navigationServices.navigate("ChatPersons")}
-                style={{ alignSelf: "flex-end", marginTop: 5, marginRight: 5 }}>
-                <Ionicons
-                  name="chatbubbles-outline"
-                  size={28}
-                  color={theme.colors.icon}
-                />
-              </Pressable>
+              <View
+                style={{
+                  alignSelf: "flex-end",
+                  marginTop: 5,
+                  gap: 10,
+                  flexDirection: "row",
+                }}>
+                <Pressable
+                  onPress={() => navigationServices.navigate("Search")}>
+                  <Ionicons
+                    name="search-outline"
+                    size={28}
+                    color={theme.colors.icon}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={() => navigationServices.navigate("ChatPersons")}>
+                  <Ionicons
+                    name="chatbubbles-outline"
+                    size={28}
+                    color={theme.colors.icon}
+                  />
+                </Pressable>
+              </View>
               <StoryList
                 stories={sortedStories}
                 onStoryPress={(story) => {
@@ -138,7 +156,7 @@ export default function Home() {
               />
 
               <FlatList
-                data={users}
+                data={visibleUserList}
                 horizontal
                 keyExtractor={(item) => item._id}
                 showsHorizontalScrollIndicator={false}
@@ -150,18 +168,44 @@ export default function Home() {
                 renderItem={({ item }) => (
                   <ProfileCard
                     name={item.name}
-                    buttonTitle={item.isFollowed ? "Unfollow" : "Follow"}
+                    OnProfilePress={() =>
+                      navigationServices.navigate("OtherProfile", {
+                        userId: item._id,
+                      })
+                    }
+                    buttonTitle="Follow"
                     onPress={async () => {
-                      if (item.isFollowed) {
-                        await dispatch(unfollowUserThunk(item._id));
-                      } else {
-                        await dispatch(followUserThunk(item._id));
-                      }
+                      try {
+                        await dispatch(followUserThunk(item._id)).unwrap();
 
-                      dispatch(getAllUsersThunk());
+                        await dispatch(getAllUsersThunk()).unwrap();
+                      } catch (error) {
+                        console.log("Follow Error =>", error);
+                      }
                     }}
                   />
                 )}
+                ListFooterComponent={
+                  visibleUsers < unfollowedUsers.length ? (
+                    <Pressable
+                      onPress={() => setVisibleUsers((prev) => prev + 5)}
+                      style={{
+                        width: 100,
+                        height: 180,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginLeft: 5,
+                      }}>
+                      <Text
+                        style={{
+                          color: theme.colors.text,
+                          fontWeight: "600",
+                        }}>
+                        Show More
+                      </Text>
+                    </Pressable>
+                  ) : null
+                }
               />
             </>
           }
@@ -219,5 +263,9 @@ const styles = StyleSheet.create({
     height: 180,
     width: 120,
     borderRadius: 5,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
   },
 });

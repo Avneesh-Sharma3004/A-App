@@ -2,7 +2,12 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useTheme } from "../theme/ThemeContext";
 
-export default function ProfileCard({ name, buttonTitle = "Follow", onPress }) {
+export default function ProfileCard({
+  name,
+  buttonTitle = "Follow",
+  onPress,
+  OnProfilePress,
+}) {
   const { theme } = useTheme();
 
   // First + Last name initials
@@ -23,7 +28,8 @@ export default function ProfileCard({ name, buttonTitle = "Follow", onPress }) {
           borderColor: theme.colors.border,
         },
       ]}>
-      <View
+      <Pressable
+        onPress={OnProfilePress}
         style={[
           styles.avatar,
           {
@@ -31,7 +37,7 @@ export default function ProfileCard({ name, buttonTitle = "Follow", onPress }) {
           },
         ]}>
         <Text style={styles.initialText}>{initials}</Text>
-      </View>
+      </Pressable>
 
       <Text
         numberOfLines={1}

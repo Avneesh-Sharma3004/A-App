@@ -176,6 +176,7 @@ export default function ChatPersons() {
         <FlatList
           data={users}
           keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <ChatPersonItem
               name={item.name}

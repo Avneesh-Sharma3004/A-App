@@ -9,6 +9,7 @@ import {
 
 const initialState = {
   users: [],
+  searchUsers: [], // Search ke results
 
   followers: [],
   following: [],
@@ -16,6 +17,7 @@ const initialState = {
   totalUsers: 0,
   totalFollowers: 0,
   totalFollowing: 0,
+  searchLoading: false,
 
   loading: false,
   error: null,
@@ -90,6 +92,22 @@ export const getAllUsersThunk = createAsyncThunk(
       console.log("API Error:", error.response?.data || error.message);
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to fetch users",
+      );
+    }
+  },
+);
+
+export const searchUsersThunk = createAsyncThunk(
+  "user/searchUsers",
+  async (search = "", thunkAPI) => {
+    try {
+      const response = await getAllUsers(search);
+      return response;
+    } catch (error) {
+      console.log("Search API Error:", error.response?.data || error.message);
+
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to search users",
       );
     }
   },
@@ -199,6 +217,26 @@ const userSlice = createSlice({
 
       .addCase(getAllUsersThunk.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Search Users
+
+      .addCase(searchUsersThunk.pending, (state) => {
+        state.searchLoading = true;
+        state.error = null;
+      })
+
+      .addCase(searchUsersThunk.fulfilled, (state, action) => {
+        state.searchLoading = false;
+
+        state.searchUsers = action.payload.users;
+      })
+
+      .addCase(searchUsersThunk.rejected, (state, action) => {
+        state.searchLoading = false;
+
+        state.searchUsers = [];
         state.error = action.payload;
       });
   },

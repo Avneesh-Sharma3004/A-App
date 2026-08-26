@@ -12,11 +12,11 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.anonymous.Frontend",
-      "googleServicesFile":"./google-services.json",
+      "googleServicesFile": "./google-services.json",
       "notification": {
-    "icon": "./assets/appIcon/A-App-Icon-1024x1024.png",
-    "color": "#000"
-  }
+        "icon": "./assets/appIcon/A-App-Icon-1024x1024.png",
+        "color": "#000"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -26,12 +26,17 @@
       "expo-video",
       "expo-font",
       "expo-notifications"
-
     ],
     "extra": {
       "eas": {
         "projectId": "d7d8212f-4417-4979-99c6-a384a93e1f28"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d7d8212f-4417-4979-99c6-a384a93e1f28"
     }
   }
 }

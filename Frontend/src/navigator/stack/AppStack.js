@@ -12,6 +12,8 @@ import FollowersList from "../../module/followers/FollowersList";
 import FollowingList from "../../module/following/FollowingList";
 import ChatPersons from "../../module/chat/ChatPersons";
 import ChatScreen from "../../module/chat/ChatScreen";
+import Search from "../../module/search/Search";
+import OtherProfile from "../../module/Profile/OtherProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,8 @@ export default function AppStack() {
       <Stack.Screen name="FollowingList" component={FollowingList} />
       <Stack.Screen name="ChatPersons" component={ChatPersons} />
       <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      <Stack.Screen name="Search" component={Search} />
+      <Stack.Screen name="OtherProfile" component={OtherProfile} />
     </Stack.Navigator>
   );
 }

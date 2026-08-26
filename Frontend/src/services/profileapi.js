@@ -5,3 +5,9 @@ export const getProfileDetails = async () => {
   // console.log(response);
   return response.data;
 };
+
+export const getOtherProfileDetails = async (userId) => {
+  const response = await api.get(`api/users/profile/${userId}`);
+  // console.log(response);
+  return response.data;
+};

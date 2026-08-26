@@ -36,7 +36,7 @@ export const connectSocket = (userId) => {
     // =========================
 
     socket.on("connect", () => {
-      console.log("🟢 Socket Connected =>", socket.id);
+      // console.log("🟢 Socket Connected =>", socket.id);
 
       // User ko apne room mein join karao
       socket.emit("joinUser", currentUserId);
@@ -50,7 +50,7 @@ export const connectSocket = (userId) => {
     // =========================
 
     socket.on("onlineUsers", ({ users }) => {
-      console.log("📋 Initial Online Users =>", users);
+      // console.log("📋 Initial Online Users =>", users);
 
       store.dispatch(setOnlineUsers(users));
     });
@@ -60,7 +60,7 @@ export const connectSocket = (userId) => {
     // =========================
 
     socket.on("userOnline", ({ userId }) => {
-      console.log("🟢 User Online =>", userId);
+      // console.log("🟢 User Online =>", userId);
 
       store.dispatch(userOnline(userId));
     });
@@ -70,7 +70,7 @@ export const connectSocket = (userId) => {
     // =========================
 
     socket.on("userOffline", ({ userId }) => {
-      console.log("🔴 User Offline =>", userId);
+      // console.log("🔴 User Offline =>", userId);
 
       store.dispatch(userOffline(userId));
     });
@@ -80,11 +80,11 @@ export const connectSocket = (userId) => {
     // =========================
 
     socket.on("disconnect", (reason) => {
-      console.log("🔴 Socket Disconnected =>", reason);
+      // console.log("🔴 Socket Disconnected =>", reason);
     });
 
     socket.on("userOnlineStatus", ({ userId, isOnline }) => {
-      console.log("📡 User Online Status =>", userId, isOnline);
+      // console.log("📡 User Online Status =>", userId, isOnline);
 
       store.dispatch(
         setUserOnlineStatus({

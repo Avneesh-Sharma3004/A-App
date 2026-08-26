@@ -73,7 +73,7 @@ export const registerForPushNotificationsAsync = async () => {
     })
   ).data;
 
-  console.log("📱 Expo Push Token =>", token);
+  // console.log("📱 Expo Push Token =>", token);
 
   return token;
 };
