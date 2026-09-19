@@ -7,10 +7,18 @@ const storyRoutes = require("./routes/story.routes");
 const userRoutes = require("./routes/user.routes");
 const messageRoutes = require("./routes/message.route");
 const notificationRoutes = require("./routes/notification.routes");
+const reelRoute = require("./routes/reel.route");
 
 const app = express();
 
 app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "A-App Backend is running 🚀",
+  });
+});
 
 app.use("/posts", postRoutes);
 app.use("/api/auth", authRoutes);
@@ -19,5 +27,6 @@ app.use("/api/stories", storyRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/reels", reelRoute);
 
 module.exports = app;

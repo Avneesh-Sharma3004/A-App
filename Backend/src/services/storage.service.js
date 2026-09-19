@@ -7,10 +7,10 @@ const imagekit = new ImageKit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 });
 
-async function uploadFile(buffer) {
+async function uploadFile(buffer, fileName = "file") {
   const result = await imagekit.files.upload({
-    file: await toFile(buffer, "image.jpg"),
-    fileName: "image.jpg",
+    file: await toFile(buffer, fileName),
+    fileName,
   });
 
   return result;
